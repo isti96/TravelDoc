@@ -1,0 +1,23 @@
+.app {
+  text-align: center;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.countrylist {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.country {
+  
+}
+
+
+
+
+
+
