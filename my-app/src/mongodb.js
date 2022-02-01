@@ -13,47 +13,38 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/getCountries", (req, res) => {
-  CountryModel.find({}, " countryName -_id ", (err, result) => {
+  CountryModel.find({}, " countryName visa ", (err, result) => {
     if (err) {
       res.json(err);
     } else {
       res.json(result);
-      console.log(result);
+      // console.log(result);
     }
   });
-});
-
-
-
-app.get("/getOne/:country", (req, res) => {
-  CountryModel.findOne(
-    { countryName: req.params.country },
-    "countryName -_id visa",
-    function (err, result) {
-      if (err) {
-        res.json(err);
-      } else {
-        res.json(result);
-        console.log("result:");
-        console.log(result);
-      }
-    }
-  );
 });
 
 app.get("/checkVisa/:from/:to", (req, res) => {
   CountryModel.findOne(
     { countryName: req.params.to },
-    "countryName -_id visa",
+    "countryName visa -_id",
     function (err, result) {
       if (err) {
         res.json(err);
       } else {
         let requireVisa = false;
+        console.log(result);
+        console.log(result.visa);
+        
         result.visa.map((countryName) => {
           if (countryName.countryName === req.params.from) {
             requireVisa = true;
-          }  console.log(countryName.countryName, " - ", req.params.from, requireVisa);
+          }
+          console.log(
+            countryName.countryName,
+            " - ",
+            req.params.from,
+            requireVisa
+          );
         });
         res.json(JSON.parse(' {"visa": '.concat(requireVisa).concat("}")));
       }
@@ -73,9 +64,17 @@ app.get("/checkPassport/:from/:to", (req, res) => {
         result.passport.map((countryName) => {
           if (countryName.countryName === req.params.from) {
             requirePassport = true;
-          }  console.log(countryName.countryName, " - ", req.params.from, requirePassport);
+          }
+          console.log(
+            countryName.countryName,
+            " - ",
+            req.params.from,
+            requirePassport
+          );
         });
-        res.json(JSON.parse(' {"passport": '.concat(requirePassport).concat("}")));
+        res.json(
+          JSON.parse(' {"passport": '.concat(requirePassport).concat("}"))
+        );
       }
     }
   );

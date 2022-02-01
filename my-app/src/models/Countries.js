@@ -1,20 +1,32 @@
 const mongoose = require("mongoose");
 
+const visaSchema = new mongoose.Schema({
+  type: Array,
+  countryName: String,
+  under18: String,
+});
+
+const passportSchema = new mongoose.Schema({
+  type: Array,
+  countryName: String,
+  under18: String,
+});
+
 const CountrieSchema = new mongoose.Schema({
-  index: {
-    type: Number,
-  },
-  countryName: {
-    type: String,
-    required: true,
-  },
+  index: Number,
+
+  countryName: String,
+
   visa: {
     type: Array,
-    of: Object,
+    required: true,
+    countryName: String,
+    under18: String,
   },
   passport: {
     type: Array,
-    of: Object,
+    countryName: String,
+    under18: String,
   },
 });
 

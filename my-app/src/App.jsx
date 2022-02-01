@@ -3,20 +3,23 @@ import Header from "./components/Header";
 import GoButton from "./components/GoButton";
 import { useEffect, useState } from "react";
 import Axios from "axios";
+import { HiSwitchHorizontal } from "react-icons/hi";
+import Dropdown from "react-dropdown";
+import "react-dropdown/style.css";
 
-var targetValueFrom;
-var targetValueTo;
 var url1 = "http://localhost:3001/checkPassport/";
 var url2 = "http://localhost:3001/checkVisa/";
 function App() {
   const [listOfCountries, setListOfCountries] = useState([""]);
   const [listOfCountryVisa, setListOfCountriesVisa] = useState([""]);
   const [listOfCountryPassport, setListOfCountriesPassport] = useState([""]);
- 
+  const [targetValueFrom, setTargetValueFrom] = useState("");
+  const [targetValueTo, setTargetValueTo] = useState("");
 
   useEffect(() => {
     Axios.get("http://localhost:3001/getCountries").then((response) => {
-      setListOfCountries(response.data);
+      setListOfCountries(response.data.map((c) => c.countryName));
+      
     });
   }, []);
 
@@ -36,38 +39,58 @@ function App() {
     );
   };
 
-  const handleCountryChangeFrom = (e) => {
-    console.log(e.target.value);
-    targetValueFrom = e.target.value;
-  };
+  function flip() {
+    console.log("flip");
+    var temp = targetValueFrom;
+    setTargetValueFrom(targetValueTo);
+    console.log(targetValueFrom);
+    setTargetValueTo(temp);
+    console.log(targetValueTo);
+  }
 
-  const handleCountryChangeTo = (e) => {
-    console.log(e.target.value);
-    targetValueTo = e.target.value;
-  };
   return (
     <div className="app">
       <Header />
       <div className="countrylist">
         <span>From:</span>
-        <div className="countryfrom">
-          <select onChange={handleCountryChangeFrom}>
-            <option value="Countries"> Countries </option>
-            {listOfCountries.map((country) => (
-              <option>{country.countryName}</option>
-            ))}
-          </select>
-        </div>
+        <Dropdown
+          options={listOfCountries}
+          onChange={(e) => {
+            setTargetValueFrom(e.value);
+          }}
+          value={targetValueFrom}
+          placeholder="Countries"
+        />
       </div>
+      <div className="switch">
+        <HiSwitchHorizontal
+          size="30px"
+          onClick={() => {
+            flip();
+          }}
+        />
+      </div>
+
       <div className="countrylist">
         <span>To:</span>
-        <div className="countryto">
-          <select onChange={handleCountryChangeTo}>
-            <option value="Countries"> Countries </option>
-            {listOfCountries.map((country) => (
-              <option>{country.countryName}</option>
-            ))}
-          </select>
+        <Dropdown
+          options={listOfCountries}
+          onChange={(e) => {
+            setTargetValueTo(e.value);
+          }}
+          value={targetValueTo}
+          placeholder="Countries"
+        />
+      </div>
+      <div className="age">
+        <p>Age:</p>
+        <div>
+          <input type="radio" name="age" />
+          <label>under 18</label>
+        </div>
+        <div>
+          <input type="radio" name="age" />
+          <label>over 18</label>
         </div>
       </div>
       <button onClick={axiosFetch}>
