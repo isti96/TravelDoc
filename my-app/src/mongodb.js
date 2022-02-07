@@ -12,18 +12,27 @@ mongoose.connect(url);
 app.use(cors());
 app.use(express.json());
 
+function mapDocument(myDocument, from, age) {
+  let require = false;
+  myDocument.map((countryName) => {
+    if (countryName.countryName === from) {
+      require = age === "under18" ? countryName.under18 : countryName.over18;
+    }
+  });
+  return require;
+}
+
 app.get("/getCountries", (req, res) => {
   CountryModel.find({}, " countryName visa ", (err, result) => {
     if (err) {
       res.json(err);
     } else {
       res.json(result);
-      // console.log(result);
     }
   });
 });
 
-app.get("/checkVisa/:from/:to", (req, res) => {
+app.get("/checkVisa/:from/:to/:age", (req, res) => {
   CountryModel.findOne(
     { countryName: req.params.to },
     "countryName visa -_id",
@@ -31,47 +40,31 @@ app.get("/checkVisa/:from/:to", (req, res) => {
       if (err) {
         res.json(err);
       } else {
-        let requireVisa = false;
-        console.log(result);
-        console.log(result.visa);
-        
-        result.visa.map((countryName) => {
-          if (countryName.countryName === req.params.from) {
-            requireVisa = true;
-          }
-          console.log(
-            countryName.countryName,
-            " - ",
-            req.params.from,
-            requireVisa
-          );
-        });
+        let requireVisa = mapDocument(
+          result.visa,
+          req.params.from,
+          req.params.age
+        );
+
         res.json(JSON.parse(' {"visa": '.concat(requireVisa).concat("}")));
       }
     }
   );
 });
 
-app.get("/checkPassport/:from/:to", (req, res) => {
+app.get("/checkPassport/:from/:to/:age", (req, res) => {
   CountryModel.findOne(
     { countryName: req.params.to },
-    "countryName -_id passport",
+    "countryName passport -_id",
     function (err, result) {
       if (err) {
         res.json(err);
       } else {
-        let requirePassport = false;
-        result.passport.map((countryName) => {
-          if (countryName.countryName === req.params.from) {
-            requirePassport = true;
-          }
-          console.log(
-            countryName.countryName,
-            " - ",
-            req.params.from,
-            requirePassport
-          );
-        });
+        let requirePassport = mapDocument(
+          result.passport,
+          req.params.from,
+          req.params.age
+        );
         res.json(
           JSON.parse(' {"passport": '.concat(requirePassport).concat("}"))
         );

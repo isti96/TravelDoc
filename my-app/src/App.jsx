@@ -3,103 +3,161 @@ import Header from "./components/Header";
 import GoButton from "./components/GoButton";
 import { useEffect, useState } from "react";
 import Axios from "axios";
-import { HiSwitchHorizontal } from "react-icons/hi";
+import { HiSwitchVertical } from "react-icons/hi";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 var url1 = "http://localhost:3001/checkPassport/";
 var url2 = "http://localhost:3001/checkVisa/";
 function App() {
   const [listOfCountries, setListOfCountries] = useState([""]);
-  const [listOfCountryVisa, setListOfCountriesVisa] = useState([""]);
-  const [listOfCountryPassport, setListOfCountriesPassport] = useState([""]);
-  const [targetValueFrom, setTargetValueFrom] = useState("");
-  const [targetValueTo, setTargetValueTo] = useState("");
+  const [listOfCountryVisa, setListOfCountriesVisa] = useState();
+  const [listOfCountryPassport, setListOfCountriesPassport] = useState();
+  const [targetValueFrom, setTargetValueFrom] = useState("Countries");
+  const [targetValueTo, setTargetValueTo] = useState("Countries");
+  const [ageValue, ageInputProps] = useRadioButtons("age");
+  const [dontNeedAnything, setDontNeedAnything] = useState(false);
 
   useEffect(() => {
     Axios.get("http://localhost:3001/getCountries").then((response) => {
       setListOfCountries(response.data.map((c) => c.countryName));
-      
     });
   }, []);
 
   const axiosFetch = () => {
-    Axios.get(url2.concat(targetValueFrom + "/").concat(targetValueTo)).then(
-      (response) => {
-        console.log(response.data.visa);
+    if (
+      !ageValue ||
+      targetValueFrom === "Countries" ||
+      targetValueTo === "Countries"
+    ) {
+      alert("Please fill in all inputs with correct values");
+    } else {
+      Axios.get(
+        url2
+          .concat(targetValueFrom + "/")
+          .concat(targetValueTo + "/")
+          .concat(ageValue)
+      ).then((response) => {
         setListOfCountriesVisa(response.data.visa);
-      }
-    );
+      });
 
-    Axios.get(url1.concat(targetValueFrom + "/").concat(targetValueTo)).then(
-      (response) => {
-        console.log(response.data.passport);
+      Axios.get(
+        url1
+          .concat(targetValueFrom + "/")
+          .concat(targetValueTo + "/")
+          .concat(ageValue)
+      ).then((response) => {
         setListOfCountriesPassport(response.data.passport);
-      }
-    );
+      });
+
+      setDontNeedAnything(true);
+    }
   };
 
+  function useRadioButtons(name) {
+    const [value, setState] = useState(null);
+
+    const handleChange = (e) => {
+      setState(e.target.value);
+    };
+
+    const inputProps = {
+      name,
+      type: "radio",
+      onChange: handleChange,
+    };
+
+    return [value, inputProps];
+  }
+
   function flip() {
-    console.log("flip");
     var temp = targetValueFrom;
     setTargetValueFrom(targetValueTo);
-    console.log(targetValueFrom);
     setTargetValueTo(temp);
-    console.log(targetValueTo);
   }
 
   return (
     <div className="app">
       <Header />
-      <div className="countrylist">
-        <span>From:</span>
-        <Dropdown
-          options={listOfCountries}
-          onChange={(e) => {
-            setTargetValueFrom(e.value);
-          }}
-          value={targetValueFrom}
-          placeholder="Countries"
-        />
+      <div className="countrylistContainer">
+        {" "}
+        <div className="countrylist">
+          <span className="span">From:</span>
+          <Dropdown
+            options={listOfCountries}
+            onChange={(e) => {
+              setTargetValueFrom(e.value);
+            }}
+            value={targetValueFrom}
+            placeholder="Countries"
+            className="dropdownisti"
+          />
+        </div>
       </div>
-      <div className="switch">
-        <HiSwitchHorizontal
-          size="30px"
-          onClick={() => {
-            flip();
-          }}
-        />
-      </div>
+      <button className="switchContainer btn-secondary rounded-circle">
+        <div className="switch">
+          <HiSwitchVertical
+            size="20px"
+            onClick={() => {
+              flip();
+            }}
+          />
+        </div>
+      </button>
 
-      <div className="countrylist">
-        <span>To:</span>
-        <Dropdown
-          options={listOfCountries}
-          onChange={(e) => {
-            setTargetValueTo(e.value);
-          }}
-          value={targetValueTo}
-          placeholder="Countries"
-        />
+      <div className="countrylistContainer">
+        <div className="countrylist">
+          <span className="span">To:</span>
+          <Dropdown
+            options={listOfCountries}
+            onChange={(e) => {
+              setTargetValueTo(e.value);
+            }}
+            value={targetValueTo}
+            placeholder="Countries"
+          />
+        </div>
       </div>
-      <div className="age">
+      <fieldset className="fieldset">
         <p>Age:</p>
-        <div>
-          <input type="radio" name="age" />
-          <label>under 18</label>
+        <div className="agefield">
+          <input
+            value="under18"
+            id="under18"
+            checked={ageValue === "under18"}
+            {...ageInputProps}
+          />
+          <label htmlFor="under18"> Under 18</label>
         </div>
-        <div>
-          <input type="radio" name="age" />
-          <label>over 18</label>
+        <div className="agefield">
+          <input
+            value="over18"
+            id="over18"
+            checked={ageValue === "over18"}
+            {...ageInputProps}
+          />
+          <label htmlFor="over18">Over 18</label>
         </div>
-      </div>
-      <button onClick={axiosFetch}>
+      </fieldset>
+      <button onClick={axiosFetch} type="button" className="btn btn-primary rounded-circle">
         <GoButton />
       </button>
-      <div>
-        <p>The documents you need are:</p>
-        <p>visa: {listOfCountryVisa ? "Yes" : "No"}</p>
-        <p>passport: {listOfCountryPassport ? "Yes" : "No"}</p>
+      <div style={{ visibility: dontNeedAnything ? "visible" : "hidden" }} className="resultdoc">
+        {listOfCountryVisa ? (
+          <div>
+            <p>The documents you need are:</p>
+            <p>visa</p>
+            {listOfCountryPassport ? <p>passport</p> : ""}
+          </div>
+        ) : listOfCountryPassport ? (
+          <div>
+            <p>The documents you need are:</p>
+            <p>passport</p>
+          </div>
+        ) : (
+          <p>You don't need any document to travel between these countries</p>
+        )}
       </div>
     </div>
   );

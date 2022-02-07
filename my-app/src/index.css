@@ -7,6 +7,11 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: url("https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/v660-mon-36-travelbadge_1.jpg?w=800&dpr=1&fit=default&crop=default&q=65&vib=3&con=3&usm=15&bg=F4F4F3&auto=format&ixlib=js-2.2.1&s=3dcd6bd8908b78b8f070f4aa6dffe15e");
+  background-repeat: no-repeat; 
+  background-position: center;
+  background-size: cover; 
+  background-attachment: fixed;
 }
 
 html {

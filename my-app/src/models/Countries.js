@@ -1,17 +1,5 @@
 const mongoose = require("mongoose");
 
-const visaSchema = new mongoose.Schema({
-  type: Array,
-  countryName: String,
-  under18: String,
-});
-
-const passportSchema = new mongoose.Schema({
-  type: Array,
-  countryName: String,
-  under18: String,
-});
-
 const CountrieSchema = new mongoose.Schema({
   index: Number,
 
@@ -21,12 +9,14 @@ const CountrieSchema = new mongoose.Schema({
     type: Array,
     required: true,
     countryName: String,
-    under18: String,
+    under18: Boolean,
+    over18: Boolean
   },
   passport: {
     type: Array,
     countryName: String,
-    under18: String,
+    under18: Boolean,
+    over18: Boolean
   },
 });
 

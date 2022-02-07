@@ -1,11 +1,11 @@
 import "./GoButton.css";
-import React, { useState } from "react";
-import Result from "./Result";
+import React from "react";
+import 'bootstrap/dist/js/bootstrap.bundle';
 
 function GoButton() {
   return (
     <div>
-      <p>GO</p>
+      <p className="buttonpara">GO</p>
     </div>
   );
 }

@@ -16,11 +16,6 @@ function CountryList() {
   const handleCountryChange = (e) => {
     console.log(e.target.value);
     targetValue = e.value;
-    // Axios.get("http://localhost:3001/getOne/".concat(e.target.value)).then(
-    //   (response) => {
-    //     setListOfCountriesVisa(response.data);
-    //   }
-    // );
   };
 
   return (
