@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const CountryModel = require("./models/Countries");
 const cors = require("cors");
 const PORT = process.env.PORT || 3001
+require("dotenv").config();
 
 mongoose.connect(process.env.MONGODB_URI || url);
 
@@ -78,6 +79,6 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static( 'my-app/build' ));
 }
 
-app.listen(PORT, () => {
+app.listen(process.env.PORT || PORT, () => {
   console.log(`server runs at port ${PORT}`);
 });
