@@ -9,8 +9,8 @@ import "react-dropdown/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 const PORT = process.env.PORT || 3001;
 
-var url1 = `http://localhost:${PORT}/checkPassport/`;
-var url2 = `http://localhost:${PORT}/checkVisa/`;
+var url1 = 'https://traveldoc.herokuapp.com/checkPassport/';
+var url2 = 'https://traveldoc.herokuapp.com/checkVisa/';
 function App() {
   const [listOfCountries, setListOfCountries] = useState([""]);
   const [listOfCountryVisa, setListOfCountriesVisa] = useState();
@@ -21,7 +21,7 @@ function App() {
   const [dontNeedAnything, setDontNeedAnything] = useState(false);
 
   useEffect(() => {
-    Axios.get(`http://localhost:${PORT}/getCountries`).then((response) => {
+    Axios.get('https://traveldoc.herokuapp.com/getCountries').then((response) => {
       setListOfCountries(response.data.map((c) => c.countryName));
     });
   }, []);
