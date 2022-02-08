@@ -6,8 +6,9 @@ const app = express();
 const mongoose = require("mongoose");
 const CountryModel = require("./models/Countries");
 const cors = require("cors");
+const PORT = process.env.PORT || 3001
 
-mongoose.connect(url);
+mongoose.connect(process.env.MONGODB_URI || url);
 
 app.use(cors());
 app.use(express.json());
@@ -73,6 +74,10 @@ app.get("/checkPassport/:from/:to/:age", (req, res) => {
   );
 });
 
-app.listen(3001, () => {
-  console.log("server runs");
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static( 'my-app/build' ));
+}
+
+app.listen(PORT, () => {
+  console.log(`server runs at port ${PORT}`);
 });
