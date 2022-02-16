@@ -7,7 +7,6 @@ import { HiSwitchVertical } from "react-icons/hi";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-const PORT = process.env.PORT || 3001;
 
 var url1 = 'https://traveldoc.herokuapp.com/checkPassport/';
 var url2 = 'https://traveldoc.herokuapp.com/checkVisa/';

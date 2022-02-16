@@ -1,5 +1,4 @@
 import "./Header.css";
-import bootstrap from 'bootstrap'
 
 function Header() {
   return (

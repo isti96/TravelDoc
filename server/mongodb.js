@@ -75,9 +75,6 @@ app.get("/checkPassport/:from/:to/:age", (req, res) => {
   );
 });
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static( 'my-app/build' ));
-}
 
 app.listen(process.env.PORT || PORT, () => {
   console.log(`server runs at port ${PORT}`);
