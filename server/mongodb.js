@@ -7,10 +7,13 @@ const PORT = process.env.PORT || 3001;
 require("dotenv").config();
 
 mongoose
-  .connect("mongodb+srv://isti96:minesotagiants96@cluster0.y5si3nq.mongodb.net/", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(
+    "mongodb+srv://isti96:minesotagiants96@cluster0.y5si3nq.mongodb.net/",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log(err));
 
@@ -28,6 +31,7 @@ function mapDocument(myDocument, from, age) {
 }
 
 app.get("/getCountries", (req, res) => {
+  console.log(req, "this is req");
   CountryModel.find({}, (err, result) => {
     if (err) {
       res.json(err);
