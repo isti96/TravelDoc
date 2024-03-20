@@ -31,11 +31,12 @@ function mapDocument(myDocument, from, age) {
 }
 
 app.get("/getCountries", (req, res) => {
-  console.log(req, "this is req");
   CountryModel.find({}, (err, result) => {
     if (err) {
+      console.log("this is err", err);
       res.json(err);
     } else {
+      console.log("this is result", result);
       res.json(result);
     }
   });
