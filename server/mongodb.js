@@ -20,10 +20,10 @@ mongoose
 app.use(cors());
 app.use(express.json());
 
-function mapDocument(myDocument, from, age) {
+function mapDocument(myDocument, to, age) {
   let require = false;
   myDocument.map((countryName) => {
-    if (countryName.countryName === from) {
+    if (countryName.countryName === to) {
       require = age === "under18" ? countryName.under18 : countryName.over18;
     }
   });
@@ -42,7 +42,7 @@ app.get("/getCountries", (req, res) => {
 
 app.get("/checkVisa/:from/:to/:age", (req, res) => {
   CountryModel.findOne(
-    { countryName: req.params.to },
+    { countryName: req.params.from },
     "countryName visa -_id",
     function (err, result) {
       if (err) {
@@ -50,7 +50,7 @@ app.get("/checkVisa/:from/:to/:age", (req, res) => {
       } else {
         let requireVisa = mapDocument(
           result.visa,
-          req.params.from,
+          req.params.to,
           req.params.age
         );
 
@@ -62,7 +62,7 @@ app.get("/checkVisa/:from/:to/:age", (req, res) => {
 
 app.get("/checkPassport/:from/:to/:age", (req, res) => {
   CountryModel.findOne(
-    { countryName: req.params.to },
+    { countryName: req.params.from },
     "countryName passport -_id",
     function (err, result) {
       if (err) {
@@ -70,7 +70,7 @@ app.get("/checkPassport/:from/:to/:age", (req, res) => {
       } else {
         let requirePassport = mapDocument(
           result.passport,
-          req.params.from,
+          req.params.to,
           req.params.age
         );
         res.json(

@@ -1,12 +1,12 @@
 import "./App.css";
 import Header from "./components/Header";
-import GoButton from "./components/GoButton";
 import { useEffect, useState } from "react";
 import Axios from "axios";
 import { HiSwitchVertical } from "react-icons/hi";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Button from "@material-ui/core/Button";
 
 var url1 = "https://traveldoc.onrender.com/checkPassport/";
 var url2 = "https://traveldoc.onrender.com/checkVisa/";
@@ -20,39 +20,33 @@ function App() {
   const [dontNeedAnything, setDontNeedAnything] = useState(false);
 
   useEffect(() => {
-    Axios.get("https://traveldoc.onrender.com/getCountries").then((response) => {
-      setListOfCountries(response.data.map((c) => c.countryName));
-    });
+    Axios.get("https://traveldoc.onrender.com/getCountries").then(
+      (response) => {
+        setListOfCountries(response.data.map((c) => c.countryName));
+      }
+    );
   }, []);
 
   const axiosFetch = () => {
-    if (
-      !ageValue ||
-      targetValueFrom === "Countries" ||
-      targetValueTo === "Countries"
-    ) {
-      alert("Please fill in all inputs with correct values");
-    } else {
-      Axios.get(
-        url2
-          .concat(targetValueFrom + "/")
-          .concat(targetValueTo + "/")
-          .concat(ageValue)
-      ).then((response) => {
-        setListOfCountriesVisa(response.data.visa);
-      });
+    Axios.get(
+      url2
+        .concat(targetValueFrom + "/")
+        .concat(targetValueTo + "/")
+        .concat(ageValue)
+    ).then((response) => {
+      setListOfCountriesVisa(response.data.visa);
+    });
 
-      Axios.get(
-        url1
-          .concat(targetValueFrom + "/")
-          .concat(targetValueTo + "/")
-          .concat(ageValue)
-      ).then((response) => {
-        setListOfCountriesPassport(response.data.passport);
-      });
+    Axios.get(
+      url1
+        .concat(targetValueFrom + "/")
+        .concat(targetValueTo + "/")
+        .concat(ageValue)
+    ).then((response) => {
+      setListOfCountriesPassport(response.data.passport);
+    });
 
-      setDontNeedAnything(true);
-    }
+    setDontNeedAnything(true);
   };
 
   function useRadioButtons(name) {
@@ -95,17 +89,18 @@ function App() {
           />
         </div>
       </div>
-      <button className="switchContainer btn-secondary rounded-circle">
+      <Button
+        variant="contained"
+        className="switchContainer btn-secondary"
+        color="primary"
+        onClick={() => {
+          flip();
+        }}
+      >
         <div className="switch">
-          <HiSwitchVertical
-            size="20px"
-            onClick={() => {
-              flip();
-            }}
-          />
+          <HiSwitchVertical size="20px" />
         </div>
-      </button>
-
+      </Button>
       <div className="countrylistContainer">
         <div className="countrylist">
           <span className="span">To:</span>
@@ -140,26 +135,32 @@ function App() {
           <label htmlFor="over18">Over 18</label>
         </div>
       </fieldset>
-      <button
-        onClick={axiosFetch}
-        type="button"
-        className="btn btn-primary rounded-circle"
+      <Button
+        variant="contained"
+        className="button"
+        color="primary"
+        onClick={() => axiosFetch()}
+        disabled={
+          !ageValue ||
+          targetValueFrom === "Countries" ||
+          targetValueTo === "Countries"
+        }
       >
-        <GoButton />
-      </button>
+        <p className="buttonpara">GO</p>
+      </Button>
       <div
         style={{ visibility: dontNeedAnything ? "visible" : "hidden" }}
         className="resultdoc"
       >
         {listOfCountryVisa ? (
           <div>
-            <p>The documents you need are:</p>
+            <p>The documents you need, are:</p>
             <p>visa</p>
             {listOfCountryPassport ? <p>passport</p> : ""}
           </div>
         ) : listOfCountryPassport ? (
           <div>
-            <p>The documents you need are:</p>
+            <p>The documents you need, are:</p>
             <p>passport</p>
           </div>
         ) : (
