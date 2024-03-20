@@ -4,11 +4,12 @@ const mongoose = require("mongoose");
 const CountryModel = require("./models/Countries");
 const cors = require("cors");
 const PORT = process.env.PORT || 3001;
+let MONGOD_CONNECT_URI;
 require("dotenv").config();
 
 mongoose
   .connect(
-    "mongodb+srv://isti96:minesotagiants96@cluster0.y5si3nq.mongodb.net/MyDatabase",
+    `mongodb+srv://isti96:${MONGOD_CONNECT_URI}@cluster0.y5si3nq.mongodb.net/MyDatabase`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
