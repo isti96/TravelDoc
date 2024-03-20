@@ -8,8 +8,8 @@ import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-var url1 = "http://localhost:3001/checkPassport/";
-var url2 = "http://localhost:3001/checkVisa/";
+var url1 = "https://traveldoc.netlify.app/checkPassport/";
+var url2 = "https://traveldoc.netlify.app/checkVisa/";
 function App() {
   const [listOfCountries, setListOfCountries] = useState([""]);
   const [listOfCountryVisa, setListOfCountriesVisa] = useState();
@@ -20,7 +20,7 @@ function App() {
   const [dontNeedAnything, setDontNeedAnything] = useState(false);
 
   useEffect(() => {
-    Axios.get("http://localhost:3001/getCountries").then((response) => {
+    Axios.get("https://traveldoc.netlify.app/getCountries").then((response) => {
       setListOfCountries(response.data.map((c) => c.countryName));
     });
   }, []);
