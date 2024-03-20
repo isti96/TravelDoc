@@ -8,7 +8,7 @@ require("dotenv").config();
 
 mongoose
   .connect(
-    "mongodb+srv://isti96:minesotagiants96@cluster0.y5si3nq.mongodb.net/",
+    "mongodb+srv://isti96:minesotagiants96@cluster0.y5si3nq.mongodb.net/MyDatabase",
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -33,10 +33,8 @@ function mapDocument(myDocument, from, age) {
 app.get("/getCountries", (req, res) => {
   CountryModel.find({}, (err, result) => {
     if (err) {
-      console.log("this is err", err);
       res.json(err);
     } else {
-      console.log("this is result", result);
       res.json(result);
     }
   });
