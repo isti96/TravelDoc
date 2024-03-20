@@ -8,8 +8,8 @@ import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-var url1 = 'https://traveldoc.herokuapp.com/checkPassport/';
-var url2 = 'https://traveldoc.herokuapp.com/checkVisa/';
+var url1 = "http://localhost:3001/checkPassport/";
+var url2 = "http://localhost:3001/checkVisa/";
 function App() {
   const [listOfCountries, setListOfCountries] = useState([""]);
   const [listOfCountryVisa, setListOfCountriesVisa] = useState();
@@ -20,7 +20,7 @@ function App() {
   const [dontNeedAnything, setDontNeedAnything] = useState(false);
 
   useEffect(() => {
-    Axios.get('https://traveldoc.herokuapp.com/getCountries').then((response) => {
+    Axios.get("http://localhost:3001/getCountries").then((response) => {
       setListOfCountries(response.data.map((c) => c.countryName));
     });
   }, []);
@@ -140,10 +140,17 @@ function App() {
           <label htmlFor="over18">Over 18</label>
         </div>
       </fieldset>
-      <button onClick={axiosFetch} type="button" className="btn btn-primary rounded-circle">
+      <button
+        onClick={axiosFetch}
+        type="button"
+        className="btn btn-primary rounded-circle"
+      >
         <GoButton />
       </button>
-      <div style={{ visibility: dontNeedAnything ? "visible" : "hidden" }} className="resultdoc">
+      <div
+        style={{ visibility: dontNeedAnything ? "visible" : "hidden" }}
+        className="resultdoc"
+      >
         {listOfCountryVisa ? (
           <div>
             <p>The documents you need are:</p>

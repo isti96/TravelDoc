@@ -1,15 +1,20 @@
-var url =
-  "mongodb+srv://isti96:minesotagiants96@cluster0.kmmdl.mongodb.net/traveldoc?retryWrites=true&w=majority";
+var url = "mongodb://localhost:27017/MyDatabase";
 
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const CountryModel = require("./models/Countries");
 const cors = require("cors");
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3001;
 require("dotenv").config();
 
-mongoose.connect(process.env.MONGODB_URI || url);
+mongoose
+  .connect("mongodb://localhost:27017/MyDatabase", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err));
 
 app.use(cors());
 app.use(express.json());
@@ -25,7 +30,7 @@ function mapDocument(myDocument, from, age) {
 }
 
 app.get("/getCountries", (req, res) => {
-  CountryModel.find({}, " countryName visa ", (err, result) => {
+  CountryModel.find({}, (err, result) => {
     if (err) {
       res.json(err);
     } else {
@@ -74,7 +79,6 @@ app.get("/checkPassport/:from/:to/:age", (req, res) => {
     }
   );
 });
-
 
 app.listen(process.env.PORT || PORT, () => {
   console.log(`server runs at port ${PORT}`);
