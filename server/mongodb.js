@@ -1,5 +1,3 @@
-var url = "mongodb://localhost:27017/MyDatabase";
-
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -9,7 +7,7 @@ const PORT = process.env.PORT || 3001;
 require("dotenv").config();
 
 mongoose
-  .connect("mongodb://localhost:27017/MyDatabase", {
+  .connect("mongodb+srv://isti96:minesotagiants96@cluster0.y5si3nq.mongodb.net/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
