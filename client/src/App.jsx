@@ -11,7 +11,7 @@ import Button from "@material-ui/core/Button";
 var url1 = "https://traveldoc.onrender.com/checkPassport/";
 var url2 = "https://traveldoc.onrender.com/checkVisa/";
 function App() {
-  const [listOfCountries, setListOfCountries] = useState([""]);
+  const [listOfCountries, setListOfCountries] = useState([]);
   const [listOfCountryVisa, setListOfCountriesVisa] = useState();
   const [listOfCountryPassport, setListOfCountriesPassport] = useState();
   const [targetValueFrom, setTargetValueFrom] = useState("Countries");
@@ -78,15 +78,19 @@ function App() {
         {" "}
         <div className="countrylist">
           <span className="span">From:</span>
-          <Dropdown
-            options={listOfCountries}
-            onChange={(e) => {
-              setTargetValueFrom(e.value);
-            }}
-            value={targetValueFrom}
-            placeholder="Countries"
-            className="dropdownisti"
-          />
+          {listOfCountries.length > 0 ? (
+            <Dropdown
+              options={listOfCountries}
+              onChange={(e) => {
+                setTargetValueFrom(e.value);
+              }}
+              value={targetValueFrom}
+              placeholder="Countries"
+              className="dropdownisti"
+            />
+          ) : (
+            <span>Loading countries...</span>
+          )}
         </div>
       </div>
       <Button
@@ -104,14 +108,18 @@ function App() {
       <div className="countrylistContainer">
         <div className="countrylist">
           <span className="span">To:</span>
-          <Dropdown
-            options={listOfCountries}
-            onChange={(e) => {
-              setTargetValueTo(e.value);
-            }}
-            value={targetValueTo}
-            placeholder="Countries"
-          />
+          {listOfCountries.length > 0 ? (
+            <Dropdown
+              options={listOfCountries}
+              onChange={(e) => {
+                setTargetValueTo(e.value);
+              }}
+              value={targetValueTo}
+              placeholder="Countries"
+            />
+          ) : (
+            <span>Loading countries...</span>
+          )}
         </div>
       </div>
       <fieldset className="fieldset">
