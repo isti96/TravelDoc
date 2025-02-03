@@ -8,112 +8,105 @@ import "react-dropdown/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "@material-ui/core/Button";
 
-var url1 = "https://traveldoc.onrender.com/checkPassport/";
-var url2 = "https://traveldoc.onrender.com/checkVisa/";
+const BASE_URL = "https://traveldoc.onrender.com";
+const url1 = `${BASE_URL}/checkPassport/`;
+const url2 = `${BASE_URL}/checkVisa/`;
+
 function App() {
   const [listOfCountries, setListOfCountries] = useState([]);
-  const [listOfCountryVisa, setListOfCountriesVisa] = useState();
-  const [listOfCountryPassport, setListOfCountriesPassport] = useState();
+  const [visaRequired, setVisaRequired] = useState(null);
+  const [passportRequired, setPassportRequired] = useState(null);
   const [targetValueFrom, setTargetValueFrom] = useState("Countries");
   const [targetValueTo, setTargetValueTo] = useState("Countries");
   const [ageValue, ageInputProps] = useRadioButtons("age");
   const [dontNeedAnything, setDontNeedAnything] = useState(false);
 
+  // Fetch the list of countries on mount
   useEffect(() => {
-    Axios.get("https://traveldoc.onrender.com/getCountries").then(
-      (response) => {
-        setListOfCountries(response.data.map((c) => c.countryName));
+    const fetchCountries = async () => {
+      try {
+        const response = await Axios.get(`${BASE_URL}/getCountries`);
+        const sortedCountries = response.data.map((c) => c.countryName).sort();
+        setListOfCountries(sortedCountries);
+      } catch (error) {
+        console.error("Error fetching countries:", error);
       }
-    );
+    };
+    fetchCountries();
   }, []);
 
-  const axiosFetch = () => {
-    Axios.get(
-      url2
-        .concat(targetValueFrom + "/")
-        .concat(targetValueTo + "/")
-        .concat(ageValue)
-    ).then((response) => {
-      setListOfCountriesVisa(response.data.visa);
-    });
+  // Fetch visa & passport info
+  const axiosFetch = async () => {
+    try {
+      const [visaResponse, passportResponse] = await Promise.all([
+        Axios.get(`${url2}${targetValueFrom}/${targetValueTo}/${ageValue}`),
+        Axios.get(`${url1}${targetValueFrom}/${targetValueTo}/${ageValue}`),
+      ]);
 
-    Axios.get(
-      url1
-        .concat(targetValueFrom + "/")
-        .concat(targetValueTo + "/")
-        .concat(ageValue)
-    ).then((response) => {
-      setListOfCountriesPassport(response.data.passport);
-    });
-
-    setDontNeedAnything(true);
+      setVisaRequired(visaResponse.data.visa);
+      setPassportRequired(passportResponse.data.passport);
+      setDontNeedAnything(true);
+    } catch (error) {
+      console.error("Error fetching travel documents:", error);
+    }
   };
 
+  // Custom hook for radio buttons
   function useRadioButtons(name) {
-    const [value, setState] = useState(null);
+    const [value, setValue] = useState(null);
 
-    const handleChange = (e) => {
-      setState(e.target.value);
-    };
+    const handleChange = (e) => setValue(e.target.value);
 
-    const inputProps = {
-      name,
-      type: "radio",
-      onChange: handleChange,
-    };
-
-    return [value, inputProps];
+    return [value, { name, type: "radio", onChange: handleChange }];
   }
 
+  // Swap 'From' and 'To' values
   function flip() {
-    var temp = targetValueFrom;
-    setTargetValueFrom(targetValueTo);
-    setTargetValueTo(temp);
+    setTargetValueFrom((prev) => {
+      setTargetValueTo(prev);
+      return targetValueTo;
+    });
   }
 
   return (
     <div className="app">
       <Header />
+
+      {/* From Dropdown */}
       <div className="countrylistContainer">
-        {" "}
         <div className="countrylist">
           <span className="span">From:</span>
-          {listOfCountries.length > 0 ? (
+          {listOfCountries.length ? (
             <Dropdown
               options={listOfCountries}
-              onChange={(e) => {
-                setTargetValueFrom(e.value);
-              }}
+              onChange={(e) => setTargetValueFrom(e.value)}
               value={targetValueFrom}
               placeholder="Countries"
-              className="dropdownisti"
             />
           ) : (
             <span>Loading countries...</span>
           )}
         </div>
       </div>
+
+      {/* Swap Button */}
       <Button
         variant="contained"
         className="switchContainer btn-secondary"
         color="primary"
-        onClick={() => {
-          flip();
-        }}
+        onClick={flip}
       >
-        <div className="switch">
-          <HiSwitchVertical size="20px" />
-        </div>
+        <HiSwitchVertical size="20px" />
       </Button>
+
+      {/* To Dropdown */}
       <div className="countrylistContainer">
         <div className="countrylist">
           <span className="span">To:</span>
-          {listOfCountries.length > 0 ? (
+          {listOfCountries.length ? (
             <Dropdown
               options={listOfCountries}
-              onChange={(e) => {
-                setTargetValueTo(e.value);
-              }}
+              onChange={(e) => setTargetValueTo(e.value)}
               value={targetValueTo}
               placeholder="Countries"
             />
@@ -122,6 +115,8 @@ function App() {
           )}
         </div>
       </div>
+
+      {/* Age Selection */}
       <fieldset className="fieldset">
         <p>Age:</p>
         <div className="agefield">
@@ -143,33 +138,32 @@ function App() {
           <label htmlFor="over18">Over 18</label>
         </div>
       </fieldset>
+
+      {/* GO Button */}
       <Button
         variant="contained"
         className="button"
         color="primary"
-        onClick={() => axiosFetch()}
+        onClick={axiosFetch}
         disabled={
           !ageValue ||
           targetValueFrom === "Countries" ||
           targetValueTo === "Countries"
         }
       >
-        <p className="buttonpara">GO</p>
+        <p className="button-p">GO</p>
       </Button>
+
+      {/* Result Display */}
       <div
         style={{ visibility: dontNeedAnything ? "visible" : "hidden" }}
         className="resultdoc"
       >
-        {listOfCountryVisa ? (
+        {visaRequired || passportRequired ? (
           <div>
-            <p>The documents you need, are:</p>
-            <p>visa</p>
-            {listOfCountryPassport ? <p>passport</p> : ""}
-          </div>
-        ) : listOfCountryPassport ? (
-          <div>
-            <p>The documents you need, are:</p>
-            <p>passport</p>
+            <p>The documents you need are:</p>
+            {visaRequired && <p>Visa</p>}
+            {passportRequired && <p>Passport</p>}
           </div>
         ) : (
           <p>You don't need any document to travel between these countries</p>
