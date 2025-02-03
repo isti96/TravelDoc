@@ -1,11 +1,12 @@
+require("dotenv").config();
 const express = require("express");
-const app = express();
 const mongoose = require("mongoose");
-const CountryModel = require("./models/Countries");
 const cors = require("cors");
+const CountryModel = require("./models/Countries");
+
+const app = express();
 const PORT = process.env.PORT || 3001;
 const databaseUrl = process.env.MONGOD_CONNECT_URI;
-require("dotenv").config();
 
 mongoose
   .connect(
@@ -16,72 +17,69 @@ mongoose
     }
   )
   .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
+  .catch((err) => console.error("MongoDB Connection Error:", err));
 
 app.use(cors());
 app.use(express.json());
 
-function mapDocument(myDocument, to, age) {
-  let require = false;
-  myDocument.map((countryName) => {
-    if (countryName.countryName === to) {
-      require = age === "under18" ? countryName.under18 : countryName.over18;
-    }
-  });
-  return require;
+// Helper function to check visa/passport requirements
+function checkRequirement(docArray, destination, age) {
+  const country = docArray.find((c) => c.countryName === destination);
+  return country
+    ? age === "under18"
+      ? country.under18
+      : country.over18
+    : false;
 }
 
-app.get("/getCountries", (req, res) => {
-  CountryModel.find({}, (err, result) => {
-    if (err) {
-      res.json(err);
-    } else {
-      res.json(result);
-    }
-  });
+// Get all countries
+app.get("/getCountries", async (req, res) => {
+  try {
+    const countries = await CountryModel.find({});
+    res.json(countries);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch countries" });
+  }
 });
 
-app.get("/checkVisa/:from/:to/:age", (req, res) => {
-  CountryModel.findOne(
-    { countryName: req.params.from },
-    "countryName visa -_id",
-    function (err, result) {
-      if (err) {
-        res.json(err);
-      } else {
-        let requireVisa = mapDocument(
-          result.visa,
-          req.params.to,
-          req.params.age
-        );
+// Check Visa Requirement
+app.get("/checkVisa/:from/:to/:age", async (req, res) => {
+  try {
+    const { from, to, age } = req.params;
+    const result = await CountryModel.findOne({ countryName: from }, "visa");
 
-        res.json(JSON.parse(' {"visa": '.concat(requireVisa).concat("}")));
-      }
+    if (!result) {
+      return res.status(404).json({ error: "Country not found" });
     }
-  );
+
+    const requireVisa = checkRequirement(result.visa, to, age);
+    res.json({ visa: requireVisa });
+  } catch (error) {
+    res.status(500).json({ error: "Error checking visa requirement" });
+  }
 });
 
-app.get("/checkPassport/:from/:to/:age", (req, res) => {
-  CountryModel.findOne(
-    { countryName: req.params.from },
-    "countryName passport -_id",
-    function (err, result) {
-      if (err) {
-        res.json(err);
-      } else {
-        let requirePassport = mapDocument(
-          result.passport,
-          req.params.to,
-          req.params.age
-        );
-        res.json(
-          JSON.parse(' {"passport": '.concat(requirePassport).concat("}"))
-        );
-      }
+// Check Passport Requirement
+app.get("/checkPassport/:from/:to/:age", async (req, res) => {
+  try {
+    const { from, to, age } = req.params;
+    const result = await CountryModel.findOne(
+      { countryName: from },
+      "passport"
+    );
+
+    if (!result) {
+      return res.status(404).json({ error: "Country not found" });
     }
-  );
+
+    const requirePassport = checkRequirement(result.passport, to, age);
+    res.json({ passport: requirePassport });
+  } catch (error) {
+    res.status(500).json({ error: "Error checking passport requirement" });
+  }
 });
 
-app.listen(process.env.PORT || PORT, () => {
-  console.log(`server runs at port ${PORT}`);
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running at port ${PORT}`);
 });
